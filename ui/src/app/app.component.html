@@ -1,0 +1,23 @@
+<main class="main" style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px;">
+  <h1>{{ title }}</h1>
+  <p>Angular 17 + .NET 8 Minimal API + Docker CI/CD</p>
+
+  <div style="margin: 20px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; display: inline-block;">
+    <h2>API Health Status</h2>
+    <p *ngIf="healthStatus; else loadingHealth">
+      Status: <strong style="color: green;">{{ healthStatus.status }}</strong><br>
+      Time: {{ healthStatus.timestamp | date:'mediumTime' }}
+    </p>
+    <ng-template #loadingHealth><p>Checking API...</p></ng-template>
+  </div>
+
+  <div style="margin: 20px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; display: inline-block;">
+    <h2>Loaded Technologies from API</h2>
+    <ul *ngIf="techData.length; else loadingData" style="list-style-type: none; padding: 0;">
+      <li *ngFor="let tech of techData" style="margin-bottom: 5px;">
+        <strong>{{ tech.name }}</strong> - {{ tech.type }}
+      </li>
+    </ul>
+    <ng-template #loadingData><p>Loading data...</p></ng-template>
+  </div>
+</main>

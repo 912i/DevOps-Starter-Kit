@@ -1,0 +1,45 @@
+---
+- name: Provision and Deploy to Azure
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Create Azure Resource Group
+      azure_rm_resourcegroup:
+        name: rg-devops-starter
+        location: westeurope
+
+    - name: Create Virtual Machine for Docker Host
+      azure_rm_virtualmachine:
+        resource_group: rg-devops-starter
+        name: vm-docker-host
+        vm_size: Standard_B2s
+        admin_username: azureuser
+        ssh_password_enabled: false
+        ssh_public_keys:
+          - path: /home/azureuser/.ssh/authorized_keys
+            key_data: "{{ ssh_pub_key }}"
+
+- name: Configure Docker Host
+  hosts: azure_vms
+  become: yes
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+      
+    - name: Install Docker Compose
+      apt:
+        name: docker-compose
+        state: present
+
+    - name: Copy docker-compose.yml
+      copy:
+        src: ../docker-compose.yml
+        dest: /opt/app/docker-compose.yml
+
+    - name: Start Application stack
+      shell: "docker-compose up -d"
+      args:
+        chdir: /opt/app/
